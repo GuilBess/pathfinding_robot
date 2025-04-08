@@ -45,4 +45,4 @@ def find_path(stop: int, n: list[Node], step: int = 0) -> list[str]:
                 new_n.append(Node(j, nodes[j].conn, i.path + [i.id])) 
     return find_path(stop, new_n, step + 1)
 
-print(find_path(75, [nodes[0]]))
+print(find_path(1, [nodes[0]]))
