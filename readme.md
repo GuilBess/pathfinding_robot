@@ -1,5 +1,7 @@
 # Pathfinding algorithm
-the pathfinding algorithm works with nodes
+the pathfinding algorithm works with a node graph, explored using a BFS algorithm to guarantee we have the shortest path.
+
+This is not the most efficient way to find a path in a maze, but our maze is small enough that the worst case scenario takes around _25 ms_
 
 Here is how the nodes are described:
 
@@ -9,15 +11,34 @@ Here is how the nodes are described:
 path: Stores the ids of the nodes we had to go through to get to this one when searching a path. Leave as default when creating the squares.
 
 ## Use the algorithm
-- See the example of the nodes creation (we create a row * col maze with no walls)
-- Use the find_path method to search for the path: find_path(stop: int, n : list[Node]) -> list[int]
-- find_path returns the optimal path, af a list of ids of the squares we have to go through
+- Throught the Pathfinding class, using an array to describe the maze:
+
+```python
+maze = [
+    ["tl", "tb", "t", "tb", "t", "tb", "tb", "trb", "tl", "t", "tr"],
+    ["l", "tr", "l", "tr", "l", "t", "t", "t", "r", "l", "r"],
+    ["bl", "br", "b", "b", "b", "b", "b", "b", "br", "bl", "br"]
+]
+
+pathfinder = Pathfinding()
+
+path = pathfinder.get_path_from_maze(maze, start=23, stop=32)
+
+pathfinder.draw_maze(arr, path)
+```
+Here, t,b,l and r stand for top, bottom, left and right. Each cell represents a maze square, and the string describes which walls are present. For example, "tl" means the top and left wall of the square are present, and we could got to the cell on the bottom or on the right. A square marked "tblr" would be unreachable or unescapable.
+
+The draw_maze function is used to visualize the maze. If a path from the get_path_from_maze function is given as argument, this path will be drawn on the maze too.
+
+The maze's squares are given a number each, from left to right and top to bottom, starting top left at 0. The start and stop arguments of the get_path_from_maze function define the starting position in the maze and the desired destination square.
 
 ### the find path method
 - stop: The id of the square we want to reach
 - n: List of nodes where we want to start from (this will most likely be a list of one node in our case)
 
-## What is left to do? 
 
-- Make this into a class
-- Implement a function to create the nodes list from the image or from a 2D array
+## Requierements
+matplotlib: 
+```bash
+pip install matplotlib
+```
