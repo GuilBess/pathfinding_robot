@@ -1,0 +1,4 @@
+A* algorithm gives the optimal path, works on a node graph
+If we can "nodeify" our maze, we can use A* to find the path
+We don't necesarly need the fastest path, so we could try BFS
+with no optimization, shouldn't take long (very small maze)
