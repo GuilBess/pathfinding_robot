@@ -36,7 +36,6 @@ class Pathfinding:
                     conn.append(i * col + j + 1)
                 if (i + 1) * col < row*col -1 and "b" not in walls:
                     conn.append((i + 1) * col + j)
-                print(conn)
                 nodes.append(Node(i*col+j, conn))
         self.nodes = nodes
     
@@ -107,18 +106,20 @@ class Pathfinding:
         plt.show()
 
         
-
-"""arr = [
+# Probable maze
+arr = [
     ["tl", "tb", "t", "tb", "t", "tb", "tb", "trb", "tl", "t", "tr"],
     ["l", "tr", "l", "tr", "l", "t", "t", "t", "r", "l", "r"],
-    ["bl", "br", "b", "b", "b", "b", "b", "b", "br", "bl", "br"]
-]"""
+    ["bl", "br", "bl", "b", "b", "b", "b", "b", "br", "bl", "br"]
+]
 
+"""
+# Empty maze
 arr = [
     ["tl", "t", "t", "t", "t", "t", "t", "t", "t", "t", "tr"],
     ["l", "", "", "", "", "", "", "", "", "", "r"],
     ["bl", "b", "b", "b", "b", "b", "b", "b", "b", "b", "br"]
-]
+]"""
 
 pathfinder = Pathfinding()
 
@@ -129,3 +130,5 @@ print(path)
 
 pathfinder.draw_maze(arr, path)
 
+path = pathfinder.get_path_from_maze(arr, start=10, stop=22)
+pathfinder.draw_maze(arr, path)
