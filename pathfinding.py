@@ -106,7 +106,7 @@ class Pathfinding:
 
         plt.show()
 
-    def get_json_from_maze(self, maze: list[list[str]], start: int, stop: int, save: bool = False):
+    def get_json_from_maze(self, maze: list[list[str]], start: int, stop: int, save: bool = False, towards: str = ""):
         path = self.get_path_from_maze(maze, start, stop)
         prev = ""
         orientation = ""
@@ -123,6 +123,7 @@ class Pathfinding:
             else:
                 print("uh oh")
             if prev == "":
+                init_rota = - towards % 90 
                 inst.append("forward:1")
             else:
                 if prev == orientation:
@@ -132,8 +133,10 @@ class Pathfinding:
                         inst.append("rotate:180")
                     elif prev + orientation in ["rd", "dl", "lu", "ur"]:
                         inst.append("rotate:90")
-                    else: 
+                    elif prev + orientation in ["dr", "ld", "ul", "ru"]: 
                         inst.append("rotate:-90")
+                    else:
+                        pass
                     inst.append("forward:1")
             prev = orientation
 
@@ -152,8 +155,8 @@ class Pathfinding:
 # Probable maze
 arr = [
     ["tl", "tb", "t", "tb", "t", "tb", "tb", "trb", "tl", "t", "tr"],
-    ["l", "tr", "l", "tr", "l", "t", "t", "t", "r", "l", "r"],
-    ["bl", "br", "bl", "b", "b", "b", "b", "b", "br", "bl", "br"]
+    ["l", "tr", "l", "tr", "lb", "tb", "tbr", "lt", "r", "l", "r"],
+    ["bl", "br", "bl", "b", "bt", "bt", "bt", "b", "br", "bl", "br"]
 ]
 
 """
