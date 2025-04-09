@@ -36,6 +36,27 @@ The maze's squares are given a number each, from left to right and top to bottom
 - stop: The id of the square we want to reach
 - n: List of nodes where we want to start from (this will most likely be a list of one node in our case)
 
+### get_json_from_maze method
+This method takes the same parameters as the get_path_from_maze method, plus an argument "save" to choose if you want to save the json result in a file or just return it. The meaning of this is to put the data in a format all the group members understand. It is formated in thew following way:
+
+```json
+{
+  "commands": [
+    {
+      "command": "forward",
+      "args": [
+        "4"
+      ]
+    },
+    {
+      "command": "rotate",
+      "args": [
+        "90"
+      ]
+    }, ...
+```
+
+the args for the "forward" command as of now is how many cells we want to go forward. The arg for the rotate command are express in degrees of clockwise rotation.
 
 ## Requierements
 matplotlib: 
