@@ -59,7 +59,7 @@ class Pathfinding:
         self.__arr2graph(maze)
         return self.__find_path(stop, [self.nodes[start]])
     
-    def draw_maze(self, maze: list[list[str]], path: list[int] = None):
+    def draw_maze(self, maze: list[list[str]], path: list[int] = None, path2:list[int] = None):
         rows = len(maze)
         cols = len(maze[0]) if rows > 0 else 0
 
@@ -75,14 +75,25 @@ class Pathfinding:
             for x in range(cols):
                 cell = maze[y][x]
                 cell_number = y * cols + x
-
-                if cell_number in path:
-                    if path[0] == cell_number:
-                        ax.add_patch(plt.Rectangle((x, y), 1, 1, color='blue', alpha=0.3))
-                    elif path[-1] == cell_number:
-                        ax.add_patch(plt.Rectangle((x, y), 1, 1, color='green', alpha=0.3))
-                    else:
-                        ax.add_patch(plt.Rectangle((x, y), 1, 1, color='red', alpha=0.3))
+                if path:
+                    if cell_number in path:
+                        if path[0] == cell_number:
+                            ax.add_patch(plt.Rectangle((x, y), 1, 1, color='blue', alpha=0.3))
+                        elif path[-1] == cell_number:
+                            ax.add_patch(plt.Rectangle((x, y), 1, 1, color='green', alpha=0.3))
+                        else:
+                            ax.add_patch(plt.Rectangle((x, y), 1, 1, color='red', alpha=0.3))
+                if path2:
+                    if cell_number in path2:
+                        if path2[0] == cell_number:
+                            ax.add_patch(plt.Rectangle((x, y), 1, 1, color='yellow', alpha=0.3))
+                        elif path2[-1] == cell_number:
+                            ax.add_patch(plt.Rectangle((x, y), 1, 1, color='purple', alpha=0.3))
+                        else:
+                            ax.add_patch(plt.Rectangle((x, y), 1, 1, color='pink', alpha=0.3))
+                if path and path2:
+                    if cell_number in path and cell_number in path2:
+                        ax.add_patch(plt.Rectangle((x, y), 1, 1, color='red', alpha=1))
 
                 # Top wall - draw gray line first, then black if wall exists
                 ax.add_line(Line2D([x, x+1], [y, y], color='gray', linewidth=0.5, alpha=0.5))
@@ -106,7 +117,7 @@ class Pathfinding:
 
         plt.show()
 
-    def get_json_from_maze(self, maze: list[list[str]], start: int, stop: int, save: bool = False, towards: str = ""):
+    def get_json_from_maze(self, maze: list[list[str]], start: int, stop: int, save: bool = False, towards: int = 0):
         path = self.get_path_from_maze(maze, start, stop)
         prev = ""
         orientation = ""
@@ -123,7 +134,11 @@ class Pathfinding:
             else:
                 print("uh oh")
             if prev == "":
-                init_rota = - towards % 90 
+                rota = towards % 90
+                init_rota = - rota if abs(rota) < 45 else 90 - rota
+                print(init_rota)
+                # Setting up known rotation when first launching the pathfinding
+                if init_rota != 0: inst.append(f"rotate:{init_rota}")
                 inst.append("forward:1")
             else:
                 if prev == orientation:
@@ -135,8 +150,7 @@ class Pathfinding:
                         inst.append("rotate:90")
                     elif prev + orientation in ["dr", "ld", "ul", "ru"]: 
                         inst.append("rotate:-90")
-                    else:
-                        pass
+
                     inst.append("forward:1")
             prev = orientation
 
@@ -154,9 +168,9 @@ class Pathfinding:
         
 # Probable maze
 arr = [
-    ["tl", "tb", "t", "tb", "t", "tb", "tb", "trb", "tl", "t", "tr"],
-    ["l", "tr", "l", "tr", "lb", "tb", "tbr", "lt", "r", "l", "r"],
-    ["bl", "br", "bl", "b", "bt", "bt", "bt", "b", "br", "bl", "br"]
+    ["tlb", "t", "trb", "tlr", "tlb", "tb", "trb", "tl", "tr", "tl", "trb"],
+    ["ltb", "r", "lt", "", "tr", "tl", "tb", "r", "lr", "bl", "rt"],
+    ["blt", "b", "br", "blr", "bl", "b", "trlb", "lrb", "lb", "tb", "rb"]
 ]
 
 """
@@ -170,13 +184,12 @@ arr = [
 pathfinder = Pathfinding()
 
 t = time.time()
-path = pathfinder.get_path_from_maze(arr, start=0, stop=32)
+path = pathfinder.get_path_from_maze(arr, start=25, stop=29)
 print("Time for pathfinding: " + str(time.time() - t))
 print(path)
 
+path2 = pathfinder.get_path_from_maze(arr, start=7, stop=30)
+
 pathfinder.draw_maze(arr, path)
 
-path = pathfinder.get_path_from_maze(arr, start=10, stop=22)
-pathfinder.draw_maze(arr, path)
-
-pathfinder.get_json_from_maze(arr, 10, 22, False)
+pathfinder.get_json_from_maze(arr, 25, 29, True)
