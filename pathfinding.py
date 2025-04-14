@@ -164,7 +164,20 @@ class Pathfinding:
                 json.dump(out, f)
         
         return out
+    
+    def divide_path(self, path: list[int]) -> None:
+        new_maze = []
+        for i in path:
+            if self.nodes[i] not in new_maze:
+                new_maze.append(self.nodes[i])
+            for j in self.nodes[i].conn:
+                if self.nodes[j] not in new_maze:
+                    new_maze.append(self.nodes[j])
 
+        for i in new_maze:
+            print(i.id)
+        
+        
         
 # Probable maze
 arr = [
@@ -187,6 +200,8 @@ t = time.time()
 path = pathfinder.get_path_from_maze(arr, start=25, stop=29)
 print("Time for pathfinding: " + str(time.time() - t))
 print(path)
+
+pathfinder.divide_path(path)
 
 path2 = pathfinder.get_path_from_maze(arr, start=7, stop=30)
 
