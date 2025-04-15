@@ -165,7 +165,7 @@ class Pathfinding:
         
         return out
     
-    def divide_path(self, path: list[int]) -> None:
+    def divide_path(self, path: list[int], base_maze: list[list[str]]) -> None:
         new_maze = []
         for i in path:
             if self.nodes[i] not in new_maze:
@@ -174,16 +174,65 @@ class Pathfinding:
                 if self.nodes[j] not in new_maze:
                     new_maze.append(self.nodes[j])
 
-        for i in new_maze:
-            print(i.id)
-        
-        
+        spot_x = min([i.id % 11 for i in new_maze])
+        size_x = max([i.id % 11 for i in new_maze]) - spot_x + 1
+
+        spot_y = min([int(i.id /11) for i in new_maze])
+        size_y = max([int(i.id /11) for i in new_maze]) - spot_y + 1
+
+        data = (spot_x, spot_y, size_x, size_y)
+
+        maze2 = []
+        for i in range(2 * size_y):
+            maze2.append([])
+            for j in range(2 * size_x):
+                maze2[i].append("")
+
+
+        for i in range(size_y):
+            for j in range(size_x):
+                if (i + spot_y)*11 + j + spot_x not in [q.id for q in new_maze]: # If there is not path to this square
+                    maze2[i*2][j*2] += "tl"        # We lock the square
+                    maze2[i*2+1][j*2] += "bl"
+                    maze2[i*2][j*2+1] += "tr"
+                    maze2[i*2+1][j*2+1] += "br"
+                else:
+                    if i  == 0:
+                        maze2[i*2][j*2] += "t"
+                        maze2[i*2][j*2+1] += "t"
+                    elif "t" in base_maze[i + spot_y][j+spot_x] or (i + spot_y-1)*11 + j + spot_x not in [q.id for q in new_maze]:
+                        maze2[i*2][j*2] += "t"
+                        maze2[i*2][j*2+1] += "t"
+
+                    if i == size_y -1:
+                        maze2[i*2+1][j*2] += "b"
+                        maze2[i*2+1][j*2+1] += "b"
+                    elif "b" in base_maze[i + spot_y][j+spot_x] or (i + spot_y+1)*11 + j + spot_x not in [q.id for q in new_maze]:
+                        maze2[i*2+1][j*2] += "b"
+                        maze2[i*2+1][j*2+1] += "b"
+
+                    if j == 0:
+                        maze2[i*2][j*2] += "l"
+                        maze2[i*2+1][j*2] += "l"
+                    elif "l" in base_maze[i + spot_y][j+spot_x] or (i + spot_y)*11 + j + spot_x -1 not in [q.id for q in new_maze]:
+                        maze2[i*2][j*2] += "l"
+                        maze2[i*2+1][j*2] += "l"
+
+                    if j == size_x -1:
+                        maze2[i*2][j*2+1] += "r"
+                        maze2[i*2+1][j*2+1] += "r"
+                    elif "r" in base_maze[i + spot_y][j+spot_x] or (i + spot_y)*11 + j + spot_x + 1 not in [q.id for q in new_maze]:
+                        maze2[i*2][j*2+1] += "r"
+                        maze2[i*2+1][j*2+1] += "r"
+                                
+        return maze2
+
         
 # Probable maze
 arr = [
     ["tlb", "t", "trb", "tlr", "tlb", "tb", "trb", "tl", "tr", "tl", "trb"],
     ["ltb", "r", "lt", "", "tr", "tl", "tb", "r", "lr", "bl", "rt"],
-    ["blt", "b", "br", "blr", "bl", "b", "trlb", "lrb", "lb", "tb", "rb"]
+    ["blt", "b", "br", "blr", "bl", "br", "trlb", "lrb", "lb", "tb", "rb"]
 ]
 
 """
@@ -201,10 +250,16 @@ path = pathfinder.get_path_from_maze(arr, start=25, stop=29)
 print("Time for pathfinding: " + str(time.time() - t))
 print(path)
 
-pathfinder.divide_path(path)
+pathfinder.divide_path(path, arr)
 
 path2 = pathfinder.get_path_from_maze(arr, start=7, stop=30)
 
 pathfinder.draw_maze(arr, path)
 
 pathfinder.get_json_from_maze(arr, 25, 29, True)
+
+new = pathfinder.divide_path(path, arr)
+
+path3 = pathfinder.get_path_from_maze(new,2,11)
+
+pathfinder.draw_maze(new, path3)
