@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import time
 import json
+from PIL import Image, ImageDraw
 
 class Node:
         #Each node has connected nodes (conn), meaning an adjacent node is reachable
@@ -59,6 +60,28 @@ class Pathfinding:
         self.__arr2graph(maze)
         return self.__find_path(stop, [self.nodes[start]])
     
+    def draw_on_pic(self, path):
+        board_size = (11,3)
+        top_left = (140,35)
+        bottom_right = (990,265)
+
+        with Image.open("in.png") as im:
+
+            draw = ImageDraw.Draw(im)
+
+            size = bottom_right[0] - top_left[0], bottom_right[1] - top_left[1]
+
+            square_size = size[0] / board_size[0], size[1] / board_size[1]
+
+            for i in range(len(path[:-1])):
+                start = path[i]%board_size[0] * square_size[0] + top_left[0] + square_size[0]/2, int(path[i]/board_size[0]) * square_size[1] + top_left[1] + square_size[1]/2
+                stop = path[i+1]%board_size[0] * square_size[0] + top_left[0] + square_size[0]/2, int(path[i+1]/board_size[0]) * square_size[1] + top_left[1] + square_size[1]/2
+                draw.line(start + stop, fill=(0,0,200), width=8)
+
+
+            
+            im.save("out.png")
+    
     def draw_maze(self, maze: list[list[str]], path: list[int] = None, path2:list[int] = None):
         rows = len(maze)
         cols = len(maze[0]) if rows > 0 else 0
@@ -115,7 +138,7 @@ class Pathfinding:
                 if 'r' in cell:
                     ax.add_line(Line2D([x+1, x+1], [y, y+1], color='black', linewidth=2))
 
-        plt.show()
+        plt.savefig("in.png")
 
     def get_json_from_maze(self, maze: list[list[str]], start: int, stop: int, save: bool = False, towards: int = 0):
         path = self.get_path_from_maze(maze, start, stop)
@@ -246,20 +269,9 @@ arr = [
 pathfinder = Pathfinding()
 
 t = time.time()
-path = pathfinder.get_path_from_maze(arr, start=25, stop=29)
+path = pathfinder.get_path_from_maze(arr, start=0, stop=10)
 print("Time for pathfinding: " + str(time.time() - t))
 print(path)
 
-pathfinder.divide_path(path, arr)
-
-path2 = pathfinder.get_path_from_maze(arr, start=7, stop=30)
-
 pathfinder.draw_maze(arr, path)
-
-pathfinder.get_json_from_maze(arr, 25, 29, True)
-
-new = pathfinder.divide_path(path, arr)
-
-path3 = pathfinder.get_path_from_maze(new,2,11)
-
-pathfinder.draw_maze(new, path3)
+pathfinder.draw_on_pic(path)
